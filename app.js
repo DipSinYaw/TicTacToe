@@ -152,7 +152,7 @@ function renderBoard(board, player, container) {
     container.innerHTML = "";
     const cardDiv = document.createElement("div");
     cardDiv.className =
-        "bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] aspect-[3/5] mx-auto flex flex-col items-stretch";
+        "bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] aspect-[3/7] mx-auto flex flex-col items-stretch";
     cardDiv.appendChild(getTitleDiv());
     cardDiv.appendChild(getInfoDiv(board));
     cardDiv.appendChild(getBoardDiv(board, player, container));
