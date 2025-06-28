@@ -1,6 +1,6 @@
 import { Board } from "./Board.js";
 export class Game {
-    constructor(creator, boardNumber = 1, playerTimerPerBoard = 2 * 60) {
+    constructor(creator, boardNumber = 1, playerTimerPerBoard = 1 * 60) {
         this.boardNumber = 1; // Default to 1 board
         this.id = crypto.randomUUID();
         this.creator = creator;

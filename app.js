@@ -191,7 +191,7 @@ if (!boardsContainer) {
     boardsContainer.className = "w-full flex flex-wrap gap-6 justify-center";
     document.body.appendChild(boardsContainer);
 }
-game = createGame("You", 1, 5);
+game = createGame("You", 1, 1 * 60);
 addAIOpponent(game);
 function waitForPlayerMove(board, player, container, remainTimeMs) {
     return new Promise((resolve) => {
