@@ -2,7 +2,7 @@ import { Player } from "./Player.js";
 export class AI extends Player {
     constructor(name, isCreator, difficulty = "easy") {
         super(name, isCreator);
-        this._moveDelayMs = 100; // 5 seconds delay
+        this._moveDelayMs = 1000; // 5 seconds delay
         this.difficulty = difficulty;
     }
     // AI will only move if it's its turn, with delay

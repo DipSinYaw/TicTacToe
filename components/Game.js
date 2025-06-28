@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { Board } from "./Board.js";
 export class Game {
     constructor(creator, boardNumber = 1, playerTimerPerBoard = 2 * 60) {
@@ -85,43 +76,5 @@ export class Game {
             this.status = "tie";
             return { status: this.status, winner: undefined };
         }
-    }
-    playWithUI(boardsContainer, renderBoard, waitForPlayerMove) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.startGame();
-            this.creator.updateBoards(this.boards);
-            if (this.opponent)
-                this.opponent.updateBoards(this.boards);
-            while (this.status === "started") {
-                if (this.creator.boards.length > 0) {
-                    const currentBoard = this.creator.boards[0];
-                    const remainTimeMs = this.creator.symbol === "X"
-                        ? currentBoard.creatorRemainTime
-                        : currentBoard.opponentRemainTime;
-                    const result = yield waitForPlayerMove(currentBoard, this.creator, boardsContainer, remainTimeMs);
-                    if (result === "timeout") {
-                        alert("Time's up! Turn skipped or handle timeout logic here.");
-                    }
-                    this.getWinner();
-                    this.creator.updateBoards(this.boards);
-                    if (this.opponent)
-                        this.opponent.updateBoards(this.boards);
-                }
-                else if (this.opponent instanceof AI && this.opponent.boards.length > 0) {
-                    const opponentBoard = this.opponent.boards[0];
-                    renderBoard(opponentBoard, this.opponent, boardsContainer);
-                    yield this.opponent.makeMove(opponentBoard);
-                    this.getWinner();
-                    this.opponent.updateBoards(this.boards);
-                    this.creator.updateBoards(this.boards);
-                }
-                else {
-                    yield new Promise((res) => setTimeout(res, 100));
-                }
-                if (this.status !== "started")
-                    break;
-            }
-            alert("Game over!");
-        });
     }
 }

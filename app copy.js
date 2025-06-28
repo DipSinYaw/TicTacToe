@@ -14,20 +14,8 @@ let game;
 let player;
 let opponent;
 let timerIntervalId = undefined;
-// let timerBoard: Board | undefined;
-// let playersTimer: HTMLElement | null = null;
-function formetTimer(msec) {
-    const minutes = Math.floor(msec / 60000)
-        .toString()
-        .padStart(2, "0");
-    const seconds = Math.floor((msec % 60000) / 1000)
-        .toString()
-        .padStart(2, "0");
-    const millis = Math.floor(msec % 1000)
-        .toString()
-        .padStart(3, "0");
-    return `${minutes}:${seconds}:${millis}`;
-}
+let timerBoard;
+let playersTimer = null;
 function updateBothTimers(board, document) {
     var _a, _b;
     // Calculate X (player) time
@@ -45,17 +33,28 @@ function updateBothTimers(board, document) {
     }
     oMsec = Math.max(0, oMsec);
     // Format
-    const format = formetTimer(oMsec);
+    const format = (msec) => {
+        const minutes = Math.floor(msec / 60000)
+            .toString()
+            .padStart(2, "0");
+        const seconds = Math.floor((msec % 60000) / 1000)
+            .toString()
+            .padStart(2, "0");
+        const millis = Math.floor(msec % 1000)
+            .toString()
+            .padStart(3, "0");
+        return `${minutes}:${seconds}:${millis}`;
+    };
     // Update UI
     const player1Timer = document.getElementById("player1-timer");
     if (player1Timer) {
-        player1Timer.textContent = formetTimer(xMsec);
+        player1Timer.textContent = format(xMsec);
         player1Timer.className =
             "font-mono text-2xl text-red-600 bg-gray-100 px-2 py-1 rounded";
     }
     const player2Timer = document.getElementById("player2-timer");
     if (player2Timer) {
-        player2Timer.textContent = formetTimer(oMsec);
+        player2Timer.textContent = format(oMsec);
         player2Timer.className =
             "font-mono text-2xl text-green-600 bg-gray-100 px-2 py-1 rounded";
     }
@@ -156,7 +155,6 @@ function getCurrentBoard() {
 function startTimerInterval() {
     if (timerIntervalId !== undefined)
         clearInterval(timerIntervalId);
-    console.log("Starting timer interval");
     timerIntervalId = window.setInterval(() => {
         const currentBoard = getCurrentBoard();
         if (currentBoard) {
@@ -165,7 +163,6 @@ function startTimerInterval() {
             currentBoard.checkConditionWinner();
             // Optionally, stop timer if board is finished
             if (currentBoard.boardWinner) {
-                console.log("Winner found, clearing timer interval");
                 clearInterval(timerIntervalId);
                 timerIntervalId = undefined;
             }
@@ -195,24 +192,22 @@ game = createGame("You", 1, 5);
 addAIOpponent(game);
 function waitForPlayerMove(board, player, container, remainTimeMs) {
     return new Promise((resolve) => {
-        var _a;
         let resolved = false;
         renderBoard(board, player, container);
-        if (((_a = board.currentTurn) === null || _a === void 0 ? void 0 : _a.symbol) === player.symbol) {
-            const boardDiv = document.getElementById(board.boardId);
-            if (boardDiv) {
-                for (let i = 0; i < 9; i++) {
-                    const cell = boardDiv.querySelector(`button[data-index="${i}"]`);
-                    if (cell && !board.cells[i] && !board.boardWinner) {
-                        cell.onclick = () => {
-                            if (!resolved) {
-                                player.onClick(board, i);
-                                player.updateBoards(game.boards);
-                                resolved = true;
-                                resolve("clicked");
-                            }
-                        };
-                    }
+        // Attach click listeners
+        const boardDiv = document.getElementById(board.boardId);
+        if (boardDiv) {
+            for (let i = 0; i < 9; i++) {
+                const cell = boardDiv.querySelector(`button[data-index="${i}"]`);
+                if (cell && !board.cells[i] && !board.boardWinner) {
+                    cell.onclick = () => {
+                        if (!resolved) {
+                            player.onClick(board, i);
+                            player.updateBoards(game.boards);
+                            resolved = true;
+                            resolve("clicked");
+                        }
+                    };
                 }
             }
         }
@@ -230,7 +225,6 @@ function startGameLoop(boardsContainer) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a;
         game.startGame();
-        let winner;
         player.updateBoards(game.boards);
         if (opponent) {
             opponent.updateBoards(game.boards);
@@ -250,29 +244,20 @@ function startGameLoop(boardsContainer) {
                     // Optionally, handle skipping turn or ending game
                 }
                 game.getWinner();
-                // if(getCurrentBoard()?.boardWinner) break;
                 player.updateBoards(game.boards);
                 if (opponent)
                     opponent.updateBoards(game.boards);
                 renderBoard(currentBoard, player, boardsContainer);
-                if (currentBoard.boardWinner) {
-                    console.log("Winner found in game loop, breaking");
-                    break;
-                }
             }
             else if (opponent instanceof AI && opponent.boards.length > 0) {
                 const opponentBoard = opponent.boards[0];
+                // displayBoard = opponentBoard;
                 renderBoard(opponentBoard, opponent, boardsContainer);
                 yield opponent.makeMove(opponentBoard); // Await AI move
                 game.getWinner();
-                // if(getCurrentBoard()?.boardWinner) break;
                 opponent.updateBoards(game.boards);
                 player.updateBoards(game.boards);
                 renderBoard(opponentBoard, opponent, boardsContainer);
-                if (opponentBoard.boardWinner) {
-                    console.log("Winner found in game loop, breaking");
-                    break;
-                }
             }
             else {
                 // No move available, wait a bit
@@ -286,14 +271,14 @@ function startGameLoop(boardsContainer) {
             clearInterval(timerIntervalId);
             timerIntervalId = undefined;
         }
-        updateBothTimers(game.boards[0], document);
+        clearInterval(timerIntervalId);
         yield new Promise((res) => setTimeout(res, 100));
         // Get the last board played (currentBoard or opponentBoard)
         const finalBoard = getCurrentBoard();
-        winner = (_a = finalBoard === null || finalBoard === void 0 ? void 0 : finalBoard.boardWinner) !== null && _a !== void 0 ? _a : "unknown";
+        const winner = (_a = finalBoard === null || finalBoard === void 0 ? void 0 : finalBoard.boardWinner) !== null && _a !== void 0 ? _a : "unknown";
         alert(`Game over! Winner is '${winner}'`);
     });
 }
 // Call this to start the loop
-startTimerInterval();
 startGameLoop(boardsContainer);
+startTimerInterval();

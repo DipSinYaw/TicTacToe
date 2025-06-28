@@ -1,6 +1,6 @@
 export class Player {
     constructor(name, isCreator) {
-        this.boards = []; // <-- Add this line
+        this.boards = [];
         this.name = name;
         this.isCreator = isCreator;
         this.symbol = isCreator ? "X" : "O";
