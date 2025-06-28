@@ -1,6 +1,7 @@
 export class Board {
     constructor(gameId, boardIndex, playerTimerPerBoard) {
-        this.boardId = `${gameId}-${boardIndex + 1}`;
+        this.gameId = `${gameId}`;
+        this.boardId = `${boardIndex + 1}`;
         this.cells = Array(9).fill("");
         this.playerTimerPerBoard = playerTimerPerBoard;
         this.moveTimes = new Map();

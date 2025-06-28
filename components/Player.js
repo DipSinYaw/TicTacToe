@@ -29,16 +29,6 @@ export class Player {
             }
         });
     }
-    // handleCellClick(board: Board, cellIndex: number): HTMLDivElement {
-    //   if (
-    //     board.currentTurn === this &&
-    //     !board.cells[cellIndex] &&
-    //     !board.boardWinner
-    //   ) {
-    //     board.fillCell(cellIndex, this.symbol);
-    //   }
-    //   return board.drawBoard();
-    // }
     onClick(board, cellIndex) {
         if (board.currentTurn === this &&
             !board.cells[cellIndex] &&
