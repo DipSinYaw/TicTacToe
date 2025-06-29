@@ -129,7 +129,7 @@ function getBoardDiv(board, player, container) {
     `.replace(/\s+/g, " ");
         cell.textContent = (_a = board.cells[i]) !== null && _a !== void 0 ? _a : "";
         cell.dataset.index = i.toString();
-        if (!board.cells[i] && !board.boardWinner) {
+        if (!board.cells[i] && !board.boardWinner && player.symbol !== "O") {
             cell.onclick = () => {
                 player.onClick(board, i);
                 player.updateBoards(game.boards);
@@ -183,7 +183,7 @@ if (!boardsContainer) {
     console.log("Creating boards container");
     boardsContainer = document.createElement("div");
     boardsContainer.id = "boards-container";
-    boardsContainer.className = "w-full flex flex-wrap gap-6 justify-center";
+    boardsContainer.className = "w-full flex flex-wrap gap-6 overflow-hidden justify-center";
     document.body.appendChild(boardsContainer);
 }
 function promptAndAuthPlayer() {
