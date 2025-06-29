@@ -44,8 +44,6 @@ function updateBothTimers(board, document) {
         oMsec -= Date.now() - board.startTurnTime;
     }
     oMsec = Math.max(0, oMsec);
-    // Format
-    const format = formetTimer(oMsec);
     // Update UI
     const player1Timer = document.getElementById("player1-timer");
     if (player1Timer) {
@@ -191,8 +189,56 @@ if (!boardsContainer) {
     boardsContainer.className = "w-full flex flex-wrap gap-6 justify-center";
     document.body.appendChild(boardsContainer);
 }
-game = createGame("You", 1, 1 * 60);
-addAIOpponent(game);
+// game = createGame("You", 1, 1 * 60);
+// addAIOpponent(game);
+function promptAndAuthPlayer() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let name = "";
+        let password = "";
+        let success = false;
+        while (!success) {
+            name = window.prompt("Enter your name:") || "";
+            password = window.prompt("Enter your password:") || "";
+            if (!name || !password) {
+                alert("Name and password are required.");
+                continue;
+            }
+            // Fetch to backend for authentication
+            try {
+                const url = "https://tictactoe-ygjf.onrender.com";
+                const response = yield fetch(new URL("/api/auth", url), {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ name, password }),
+                });
+                const result = yield response.json();
+                if (result.success === true) {
+                    success = true;
+                }
+                else {
+                    alert("Authentication failed. Try again.");
+                }
+            }
+            catch (err) {
+                alert("Error connecting to server.");
+                return null;
+            }
+        }
+        return name;
+    });
+}
+// Usage:
+(() => __awaiter(void 0, void 0, void 0, function* () {
+    const playerName = yield promptAndAuthPlayer();
+    if (playerName) {
+        game = createGame(playerName, 1, 1 * 60);
+        addAIOpponent(game);
+        startTimerInterval();
+        startGameLoop(boardsContainer);
+    }
+}))();
 function waitForPlayerMove(board, player, container, remainTimeMs) {
     return new Promise((resolve) => {
         var _a;
@@ -295,5 +341,5 @@ function startGameLoop(boardsContainer) {
     });
 }
 // Call this to start the loop
-startTimerInterval();
-startGameLoop(boardsContainer);
+// startTimerInterval();
+// startGameLoop(boardsContainer);
