@@ -12,7 +12,6 @@ import { Player } from "./components/Player.js";
 import { AI } from "./components/AI.js";
 let game;
 let player;
-let loginName = null;
 let opponent;
 let timerIntervalId = undefined;
 // let timerBoard: Board | undefined;
@@ -31,32 +30,29 @@ function formetTimer(msec) {
 }
 function updateBothTimers(board, document) {
     var _a, _b;
-    // Calculate X (player) time
     let xMsec = board.creatorRemainTime;
     if (((_a = board.currentTurn) === null || _a === void 0 ? void 0 : _a.symbol) === "X" &&
         typeof board.startTurnTime === "number") {
         xMsec -= Date.now() - board.startTurnTime;
     }
     xMsec = Math.max(0, xMsec);
-    // Calculate O (opponent/AI) time
     let oMsec = board.opponentRemainTime;
     if (((_b = board.currentTurn) === null || _b === void 0 ? void 0 : _b.symbol) === "O" &&
         typeof board.startTurnTime === "number") {
         oMsec -= Date.now() - board.startTurnTime;
     }
     oMsec = Math.max(0, oMsec);
-    // Update UI
     const player1Timer = document.getElementById("player1-timer");
     if (player1Timer) {
         player1Timer.textContent = formetTimer(xMsec);
         player1Timer.className =
-            "font-mono text-2xl text-red-600 bg-gray-100 px-2 py-1 rounded";
+            "font-mono text-2xl bg-gray-100 px-2 py-1 rounded";
     }
     const player2Timer = document.getElementById("player2-timer");
     if (player2Timer) {
         player2Timer.textContent = formetTimer(oMsec);
         player2Timer.className =
-            "font-mono text-2xl text-green-600 bg-gray-100 px-2 py-1 rounded";
+            "font-mono text-2xl bg-gray-100 px-2 py-1 rounded";
     }
 }
 // --- Game Setup ---
@@ -190,8 +186,6 @@ if (!boardsContainer) {
     boardsContainer.className = "w-full flex flex-wrap gap-6 justify-center";
     document.body.appendChild(boardsContainer);
 }
-// game = createGame("You", 1, 1 * 60);
-// addAIOpponent(game);
 function promptAndAuthPlayer() {
     return __awaiter(this, void 0, void 0, function* () {
         let name = "";
@@ -205,7 +199,6 @@ function promptAndAuthPlayer() {
                 continue;
             }
             console.log("Attempting to authenticate:", { name, password });
-            // Fetch to backend for authentication
             try {
                 const url = "https://tictactoe-ygjf.onrender.com/api/auth";
                 // const url = "http://localhost:3000"; // Change to your server URL
@@ -233,7 +226,6 @@ function promptAndAuthPlayer() {
         return name;
     });
 }
-// Usage:
 (() => __awaiter(void 0, void 0, void 0, function* () {
     const playerName = yield promptAndAuthPlayer();
     if (playerName) {
@@ -266,7 +258,6 @@ function waitForPlayerMove(board, player, container, remainTimeMs) {
                 }
             }
         }
-        // Set timeout for remainTimeMs
         setTimeout(() => {
             if (!resolved) {
                 resolved = true;
@@ -275,7 +266,6 @@ function waitForPlayerMove(board, player, container, remainTimeMs) {
         }, remainTimeMs);
     });
 }
-// Usage in your game loop (async function)
 function startGameLoop(boardsContainer) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a;
@@ -285,7 +275,6 @@ function startGameLoop(boardsContainer) {
         if (opponent) {
             opponent.updateBoards(game.boards);
         }
-        // let displayBoard = game.boards[0];
         while (game.status === "started") {
             if (player.boards.length > 0) {
                 const currentBoard = player.boards[0];
@@ -297,10 +286,8 @@ function startGameLoop(boardsContainer) {
                     yield new Promise((res) => setTimeout(res, 100));
                     alert("Time's up! Turn skipped or handle timeout logic here.");
                     break;
-                    // Optionally, handle skipping turn or ending game
                 }
                 game.getWinner();
-                // if(getCurrentBoard()?.boardWinner) break;
                 player.updateBoards(game.boards);
                 if (opponent)
                     opponent.updateBoards(game.boards);
@@ -315,7 +302,6 @@ function startGameLoop(boardsContainer) {
                 renderBoard(opponentBoard, opponent, boardsContainer);
                 yield opponent.makeMove(opponentBoard); // Await AI move
                 game.getWinner();
-                // if(getCurrentBoard()?.boardWinner) break;
                 opponent.updateBoards(game.boards);
                 player.updateBoards(game.boards);
                 renderBoard(opponentBoard, opponent, boardsContainer);
@@ -341,9 +327,6 @@ function startGameLoop(boardsContainer) {
         // Get the last board played (currentBoard or opponentBoard)
         const finalBoard = getCurrentBoard();
         winner = (_a = finalBoard === null || finalBoard === void 0 ? void 0 : finalBoard.boardWinner) !== null && _a !== void 0 ? _a : "unknown";
-        alert(`Game over! Winner is '${winner}'`);
+        alert(`Game over! ${winner === '=' ? 'Draw game!' : winner + ' wins!'}`);
     });
 }
-// Call this to start the loop
-// startTimerInterval();
-// startGameLoop(boardsContainer);

@@ -32,7 +32,6 @@ export class Game {
         }
     }
     startGame() {
-        // console.log("Game started with boards:", this.boards);
         this.status = "started";
         this.gameStartDateTime = new Date();
         this.boards.forEach((board) => {
