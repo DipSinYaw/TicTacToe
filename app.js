@@ -12,6 +12,7 @@ import { Player } from "./components/Player.js";
 import { AI } from "./components/AI.js";
 let game;
 let player;
+let loginName = null;
 let opponent;
 let timerIntervalId = undefined;
 // let timerBoard: Board | undefined;
@@ -203,9 +204,11 @@ function promptAndAuthPlayer() {
                 alert("Name and password are required.");
                 continue;
             }
+            console.log("Attempting to authenticate:", { name, password });
             // Fetch to backend for authentication
             try {
-                const url = "https://tictactoe-ygjf.onrender.com";
+                const url = "https://tictactoe-ygjf.onrender.com/api/auth";
+                // const url = "http://localhost:3000"; // Change to your server URL
                 const response = yield fetch(new URL("/api/auth", url), {
                     method: "POST",
                     headers: {
@@ -215,6 +218,7 @@ function promptAndAuthPlayer() {
                 });
                 const result = yield response.json();
                 if (result.success === true) {
+                    console.log("Auth result:", result);
                     success = true;
                 }
                 else {
