@@ -45,14 +45,12 @@ function updateBothTimers(board, document) {
     const player1Timer = document.getElementById("player1-timer");
     if (player1Timer) {
         player1Timer.textContent = formetTimer(xMsec);
-        player1Timer.className =
-            "font-mono text-2xl bg-gray-100 px-2 py-1 rounded";
+        player1Timer.className = "font-mono text-2xl bg-gray-100 px-2 py-1 rounded";
     }
     const player2Timer = document.getElementById("player2-timer");
     if (player2Timer) {
         player2Timer.textContent = formetTimer(oMsec);
-        player2Timer.className =
-            "font-mono text-2xl bg-gray-100 px-2 py-1 rounded";
+        player2Timer.className = "font-mono text-2xl bg-gray-100 px-2 py-1 rounded";
     }
 }
 // --- Game Setup ---
@@ -106,7 +104,7 @@ function getInfoDiv(board) {
     return topDiv;
 }
 function getBoardDiv(board, player, container) {
-    var _a;
+    var _a, _b;
     // Board Grid
     const boardDiv = document.createElement("div");
     boardDiv.id = board.boardId;
@@ -129,7 +127,9 @@ function getBoardDiv(board, player, container) {
     `.replace(/\s+/g, " ");
         cell.textContent = (_a = board.cells[i]) !== null && _a !== void 0 ? _a : "";
         cell.dataset.index = i.toString();
-        if (!board.cells[i] && !board.boardWinner && player.symbol !== "O") {
+        if (!board.cells[i] &&
+            !board.boardWinner &&
+            player.symbol !== ((_b = board.currentTurn) === null || _b === void 0 ? void 0 : _b.symbol)) {
             cell.onclick = () => {
                 player.onClick(board, i);
                 player.updateBoards(game.boards);
@@ -168,13 +168,25 @@ function startTimerInterval() {
     }, 100);
 }
 function renderBoard(board, player, container) {
+    console.log("Rendering board:", board.boardId);
     container.innerHTML = "";
     const cardDiv = document.createElement("div");
     cardDiv.className =
         "bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] aspect-[3/4] mx-auto flex flex-col items-stretch";
     cardDiv.appendChild(getTitleDiv());
-    cardDiv.appendChild(getInfoDiv(board));
-    cardDiv.appendChild(getBoardDiv(board, player, container));
+    if (game.status === "waiting") {
+        console.log("Rendering status:", game.status);
+        cardDiv.appendChild(getStartDiv(container));
+    }
+    else if (game.status === "completed" || game.status === "tie") {
+        console.log("Rendering status:", game.status);
+        game.reset();
+        cardDiv.appendChild(getStartDiv(container));
+    }
+    else if (game.status === "started") {
+        cardDiv.appendChild(getInfoDiv(board));
+        cardDiv.appendChild(getBoardDiv(board, player, container));
+    }
     container.appendChild(cardDiv);
 }
 // --- DOM Setup ---
@@ -183,7 +195,8 @@ if (!boardsContainer) {
     console.log("Creating boards container");
     boardsContainer = document.createElement("div");
     boardsContainer.id = "boards-container";
-    boardsContainer.className = "w-full flex flex-wrap gap-6 overflow-hidden justify-center";
+    boardsContainer.className =
+        "w-full flex flex-wrap gap-6 overflow-hidden justify-center";
     document.body.appendChild(boardsContainer);
 }
 function promptAndAuthPlayer() {
@@ -226,15 +239,6 @@ function promptAndAuthPlayer() {
         return name;
     });
 }
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    const playerName = yield promptAndAuthPlayer();
-    if (playerName) {
-        game = createGame(playerName, 1, 1 * 60);
-        addAIOpponent(game);
-        startTimerInterval();
-        startGameLoop(boardsContainer);
-    }
-}))();
 function waitForPlayerMove(board, player, container, remainTimeMs) {
     return new Promise((resolve) => {
         var _a;
@@ -327,6 +331,34 @@ function startGameLoop(boardsContainer) {
         // Get the last board played (currentBoard or opponentBoard)
         const finalBoard = getCurrentBoard();
         winner = (_a = finalBoard === null || finalBoard === void 0 ? void 0 : finalBoard.boardWinner) !== null && _a !== void 0 ? _a : "unknown";
-        alert(`Game over! ${winner === '=' ? 'Draw game!' : winner + ' wins!'}`);
+        alert(`Game over! ${winner === "=" ? "Draw game!" : winner + " wins!"}`);
     });
 }
+function startApp(boardsContainer) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const playerName = yield promptAndAuthPlayer();
+        if (playerName) {
+            game = createGame(playerName, 1, 1 * 60);
+            addAIOpponent(game);
+            renderBoard(game.boards[0], player, boardsContainer);
+        }
+    });
+}
+function getStartDiv(boardsContainer) {
+    const startDiv = document.createElement("div");
+    startDiv.className = "flex flex-col items-center justify-center h-full py-10";
+    const btn = document.createElement("button");
+    btn.className =
+        "bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded text-xl shadow-lg transition";
+    btn.textContent = "Start Game";
+    btn.onclick = () => {
+        // startApp(boardsContainer);
+        // Optionally, remove the startDiv after starting
+        startDiv.remove();
+        startTimerInterval();
+        startGameLoop(boardsContainer);
+    };
+    startDiv.appendChild(btn);
+    return startDiv;
+}
+startApp(boardsContainer);
