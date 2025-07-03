@@ -21,13 +21,15 @@ export class Player {
             const bRemainTime = bTime - (currentTime - bTurnTime);
             return aRemainTime - bRemainTime;
         });
-        this.boards.forEach((board, index) => {
-            if (this.isCreator) {
-                console.log(`** boardId: ${board.boardId}, creatorRemainTime: ${board.creatorRemainTime}, opponentRemainTime: ${board.opponentRemainTime}`);
-                console.log(`boardCell: ${board.cells.join(", ")}`);
-                console.log(`boardWinner: ${board.boardWinner}`);
-            }
-        });
+        // this.boards.forEach((board, index) => {
+        //   if (this.isCreator) {
+        //     console.log(
+        //       `** boardId: ${board.boardId}, creatorRemainTime: ${board.creatorRemainTime}, opponentRemainTime: ${board.opponentRemainTime}`
+        //     );
+        //     console.log(`boardCell: ${board.cells.join(", ")}`);
+        //     console.log(`boardWinner: ${board.boardWinner}`);
+        //   }
+        // });
     }
     onClick(board, cellIndex) {
         if (board.currentTurn === this &&

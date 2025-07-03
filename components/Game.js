@@ -43,7 +43,16 @@ export class Game {
         this.status = "completed";
     }
     reset() {
-        this.initBoards();
+        for (const board of this.boards) {
+            board.cells = Array(9).fill("");
+            board.boardWinner = undefined;
+            board.creatorRemainTime = this.playerTimerPerBoard * 1000;
+            board.opponentRemainTime = this.playerTimerPerBoard * 1000;
+            board.currentTurn = this.winner === this.creator ? this.creator : this.opponent;
+            board.startTurnTime = undefined;
+            board.moveTimes.clear();
+            // Reset any other board state as needed
+        }
         this.status = "waiting";
         this.winner = undefined;
         this.gameStartDateTime = undefined;

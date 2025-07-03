@@ -168,26 +168,34 @@ function startTimerInterval() {
     }, 100);
 }
 function renderBoard(board, player, container) {
-    console.log("Rendering board:", board.boardId);
-    container.innerHTML = "";
-    const cardDiv = document.createElement("div");
-    cardDiv.className =
-        "bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] aspect-[3/4] mx-auto flex flex-col items-stretch";
-    cardDiv.appendChild(getTitleDiv());
-    if (game.status === "waiting") {
-        console.log("Rendering status:", game.status);
-        cardDiv.appendChild(getStartDiv(container));
-    }
-    else if (game.status === "completed" || game.status === "tie") {
-        console.log("Rendering status:", game.status);
-        game.reset();
-        cardDiv.appendChild(getStartDiv(container));
-    }
-    else if (game.status === "started") {
-        cardDiv.appendChild(getInfoDiv(board));
-        cardDiv.appendChild(getBoardDiv(board, player, container));
-    }
-    container.appendChild(cardDiv);
+    return __awaiter(this, void 0, void 0, function* () {
+        // console.log("Rendering board:", board.boardId);
+        // if (!(game.status === "completed" || game.status === "tie")) {
+        container.innerHTML = "";
+        // }
+        const cardDiv = document.createElement("div");
+        cardDiv.className =
+            "bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] aspect-[3/4] mx-auto flex flex-col items-stretch";
+        cardDiv.appendChild(getTitleDiv());
+        if (game.status === "waiting") {
+            // console.log("Rendering status:", game.status);
+            cardDiv.appendChild(getStartDiv(container));
+        }
+        else if (game.status === "completed" || game.status === "tie") {
+            console.log("Rendering status:", game.status);
+            cardDiv.appendChild(getInfoDiv(board));
+            cardDiv.appendChild(getBoardDiv(board, player, container));
+            container.appendChild(cardDiv);
+            yield new Promise((res) => setTimeout(res, 150));
+            game.reset();
+            cardDiv.appendChild(getStartDiv(container));
+        }
+        else if (game.status === "started") {
+            cardDiv.appendChild(getInfoDiv(board));
+            cardDiv.appendChild(getBoardDiv(board, player, container));
+        }
+        container.appendChild(cardDiv);
+    });
 }
 // --- DOM Setup ---
 let boardsContainer = document.getElementById("boards-container");
@@ -211,7 +219,7 @@ function promptAndAuthPlayer() {
                 alert("Name and password are required.");
                 continue;
             }
-            console.log("Attempting to authenticate:", { name, password });
+            // console.log("Attempting to authenticate:", { name, password });
             try {
                 const url = "https://tictactoe-ygjf.onrender.com/api/auth";
                 // const url = "http://localhost:3000"; // Change to your server URL
@@ -224,7 +232,7 @@ function promptAndAuthPlayer() {
                 });
                 const result = yield response.json();
                 if (result.success === true) {
-                    console.log("Auth result:", result);
+                    // console.log("Auth result:", result);
                     success = true;
                 }
                 else {
@@ -236,6 +244,7 @@ function promptAndAuthPlayer() {
                 return null;
             }
         }
+        // console.log("Authenticated successfully:", { name });
         return name;
     });
 }
@@ -288,7 +297,7 @@ function startGameLoop(boardsContainer) {
                 const result = yield waitForPlayerMove(currentBoard, player, boardsContainer, remainTimeMs);
                 if (result === "timeout") {
                     yield new Promise((res) => setTimeout(res, 100));
-                    alert("Time's up! Turn skipped or handle timeout logic here.");
+                    alert("Time's up!");
                     break;
                 }
                 game.getWinner();
@@ -303,7 +312,6 @@ function startGameLoop(boardsContainer) {
             }
             else if (opponent instanceof AI && opponent.boards.length > 0) {
                 const opponentBoard = opponent.boards[0];
-                renderBoard(opponentBoard, opponent, boardsContainer);
                 yield opponent.makeMove(opponentBoard); // Await AI move
                 game.getWinner();
                 opponent.updateBoards(game.boards);

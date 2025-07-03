@@ -59,7 +59,7 @@ export class Board {
         if (!this.boardWinner) {
             this.changeTurn();
         }
-        console.log(`this board winner: ${this.boardWinner}`);
+        // console.log(`this board winner: ${this.boardWinner}`);
         return true;
     }
     checkThree() {
@@ -100,7 +100,7 @@ export class Board {
             this.currentTurn === this.creator ? this.opponent : this.creator;
         this.startTurnTime = Date.now();
         this.putMoveTimes(this.currentTurn.symbol);
-        console.log(`Current turn changed to: ${this.currentTurn.symbol}`);
+        // console.log(`Current turn changed to: ${this.currentTurn.symbol}`);
     }
     updateCurrentTurnRemainTime(symbol) {
         if (!this.startTurnTime) {
