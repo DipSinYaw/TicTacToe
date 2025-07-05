@@ -284,6 +284,8 @@ function startGameLoop(boardsContainer) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a;
         game.startGame();
+        boardsContainer.innerHTML = ""; // Clear previous boards
+        renderBoard(game.boards[0], player, boardsContainer);
         let winner;
         player.updateBoards(game.boards);
         if (opponent) {
@@ -299,7 +301,8 @@ function startGameLoop(boardsContainer) {
                 if (result === "timeout") {
                     yield new Promise((res) => setTimeout(res, 100));
                     alert("Time's up!");
-                    break;
+                    currentBoard.checkConditionWinner(); // Check if timeout leads to a winner
+                    // break;
                 }
                 game.getWinner();
                 player.updateBoards(game.boards);
@@ -347,7 +350,7 @@ function startApp(boardsContainer) {
     return __awaiter(this, void 0, void 0, function* () {
         const playerName = yield promptAndAuthPlayer();
         if (playerName) {
-            game = createGame(playerName, 1, 1 * 60);
+            game = createGame(playerName, 1, 1 * 20);
             addAIOpponent(game);
             renderBoard(game.boards[0], player, boardsContainer);
         }
