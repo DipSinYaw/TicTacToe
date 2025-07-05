@@ -175,11 +175,12 @@ function renderBoard(board, player, container) {
         // }
         const cardDiv = document.createElement("div");
         cardDiv.className =
-            "bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] aspect-[3/4] mx-auto flex flex-col items-stretch";
+            "bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] aspect-[3/5] mx-auto flex flex-col items-stretch";
         cardDiv.appendChild(getTitleDiv());
         if (game.status === "waiting") {
-            // console.log("Rendering status:", game.status);
-            cardDiv.appendChild(getStartDiv(container));
+            const startDiv = getStartDiv(container);
+            startDiv.classList.add("py-50");
+            cardDiv.appendChild(startDiv);
         }
         else if (game.status === "completed" || game.status === "tie") {
             console.log("Rendering status:", game.status);
@@ -354,7 +355,7 @@ function startApp(boardsContainer) {
 }
 function getStartDiv(boardsContainer) {
     const startDiv = document.createElement("div");
-    startDiv.className = "flex flex-col items-center justify-center h-full py-10";
+    startDiv.className = "flex flex-col py-5 items-center justify-center";
     const btn = document.createElement("button");
     btn.className =
         "bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded text-xl shadow-lg transition";
